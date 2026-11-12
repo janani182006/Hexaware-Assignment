@@ -1,16 +1,3 @@
--- Java Track – Day 6 Assignment
--- Set 1: Retail Sales Reporting
--- MySQL 8.4 LTS
---
--- Assumed tables:
--- customers(customer_id, customer_name, city)
--- products(product_id, product_name, category)
--- orders(order_id, customer_id, order_date)
--- order_items(item_id, order_id, product_id, quantity, unit_price, discount)
--- payments(payment_id, order_id)
---
--- Run this script after creating the tables and inserting sample data.
--- The sample INSERT statements are provided separately in Set1_Expected_Outputs.docx.
 
 
 -- =========================================================
