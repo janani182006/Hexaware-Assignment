@@ -1,18 +1,4 @@
-/*
-SET 1 – LOGISTICS SHIPMENT ANALYSIS
-MySQL 8.4 LTS
 
-Deliverable: advanced_reports.sql
-
-SCHEMA NOTE
-The assignment does not provide an existing database schema. This script therefore
-creates a normalized sample schema for the stated business scenario:
-hubs, employees, carriers, customers, shipments and delivery_events.
-
-Run this script in MySQL Workbench or the MySQL 8.4 command line.
-The DROP TABLE statements reset only these assignment tables in the selected
-database. Change the database name below if required.
-*/
 
 CREATE DATABASE IF NOT EXISTS logistics_shipment_analysis;
 USE logistics_shipment_analysis;
