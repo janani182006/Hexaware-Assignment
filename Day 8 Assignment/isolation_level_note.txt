@@ -1,0 +1,99 @@
+SET 1 – BANK FUNDS TRANSFER
+ISOLATION-LEVEL NOTE
+
+1. Effect of AUTOCOMMIT
+
+In MySQL, AUTOCOMMIT is enabled by default. It means each SQL statement is
+saved permanently after it is executed.
+
+We can check it using:
+
+    SELECT @@autocommit;
+
+If we debit money from one account and credit another account using separate
+statements without a transaction, the debit may be saved even if the credit
+fails.
+
+To avoid this problem, we use START TRANSACTION, COMMIT and ROLLBACK.
+COMMIT saves all changes. ROLLBACK cancels all changes made in the transaction.
+
+2. READ COMMITTED – Two-session experiment
+
+Open two MySQL Workbench query tabs and use the same database.
+
+SESSION A:
+
+    SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
+    START TRANSACTION;
+    SELECT balance FROM accounts WHERE account_id = 1;
+
+Keep Session A open.
+
+SESSION B:
+
+    UPDATE accounts
+    SET balance = balance - 100
+    WHERE account_id = 1;
+    COMMIT;
+
+Again run in SESSION A:
+
+    SELECT balance FROM accounts WHERE account_id = 1;
+    COMMIT;
+
+Observation:
+In READ COMMITTED, Session A can see the newly committed balance from
+Session B when it runs the second SELECT. Each SELECT gets the latest
+committed data. So a non-repeatable read can happen.
+
+3. REPEATABLE READ – Two-session experiment
+
+SESSION A:
+
+    SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
+    SELECT balance FROM accounts WHERE account_id = 1;
+
+Keep Session A open.
+
+SESSION B:
+
+    UPDATE accounts
+    SET balance = balance - 100
+    WHERE account_id = 1;
+    COMMIT;
+
+Again run in SESSION A:
+
+    SELECT balance FROM accounts WHERE account_id = 1;
+    COMMIT;
+
+Observation:
+In REPEATABLE READ, Session A sees the same balance in both SELECT
+statements because it uses the same transaction snapshot. The update
+committed by Session B is not visible to Session A's ordinary SELECT
+until Session A ends its transaction.
+
+4. Difference between READ COMMITTED and REPEATABLE READ
+
+READ COMMITTED:
+- Every consistent SELECT gets a new snapshot.
+- It can show changes committed by another session.
+- Non-repeatable reads may happen.
+
+REPEATABLE READ:
+- Consistent SELECT statements use the same snapshot during a transaction.
+- Changes committed by another session are not visible to those SELECTs
+  until the transaction ends.
+- It prevents non-repeatable reads for ordinary consistent SELECT statements.
+
+5. Conclusion
+
+For bank fund transfers, transactions are important because both debit and
+credit operations should succeed together. If any operation fails, ROLLBACK
+restores the previous data. AUTOCOMMIT is suitable for individual statements,
+but START TRANSACTION is safer for a group of related operations.
+
+In this assignment, READ COMMITTED and REPEATABLE READ are compared using
+two sessions. READ COMMITTED can show newly committed changes in a later
+SELECT, whereas REPEATABLE READ keeps the same snapshot for consistent reads.
